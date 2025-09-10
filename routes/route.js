@@ -1,19 +1,20 @@
 import express from 'express';
-import {signupUser, loginUser} from '../controller/user.controller.js';
+import {signupUser, loginUser,logoutUser} from '../controller/user.controller.js';
 // image upload endpoints  will be added Here
 // import { createNote, getAllNotes, getNote, updateNote, deleteNote} from '../controller/postController.js';
-// import { authenticateToken } from '../controller/jwtController.js';
+import { createNote} from '../controller/note.controller.js';
+
+import { authenticateToken } from '../controller/jwt.controller.js';
 
 const router=express.Router();
 
 router.post('/signup',signupUser);
 router.post('/login',loginUser);
-// router.post('/logout',logoutUser);
+router.post('/logout',logoutUser);
 // file upload endpoints  will be added  here  later onn
 
-// down this will implement one by one today only delaing with the user contloller 
-// // CREATE A NOTE
-// router.post('/create',authenticateToken, createNote);
+// CREATE A NOTE
+router.post('/create',authenticateToken, createNote);
 // // GET ALL NOTES 
 // router.get('/posts', authenticateToken, getAllNotes);
 // // GET A NOTE

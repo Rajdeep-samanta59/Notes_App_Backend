@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 
+// User schema aligned with client Signup/Login fields
+// Frontend uses email and password (name is optional on signup form)
 const userSchema = new mongoose.Schema(
     {
-        email: { type: String, required: true, unique: true, trim: true },
-        name: { type: String, required: true, trim: true },
+        email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+        name: { type: String, required: false, trim: true },
         password: { type: String, required: true },
     },
     { timestamps: true }

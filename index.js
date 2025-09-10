@@ -8,9 +8,9 @@ import router from "./routes/route.js";
 dotenv.config();
 
 const app = express();
-
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json({ extended: true }));
+// app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", router);  
 
@@ -19,11 +19,15 @@ app.get("/", (req, res) => {
 });
 
 
-//down comment (not needed in vcl)
-app.listen(process.env.PORT || 8000,()=> console.log(`Server is running successfully on PORT 8000`));
-console.log("LISTENING TO 8000");
-//comment up
+Connection()
+  .then(() => {
+    app.listen(process.env.PORT || 8000, () =>
+      console.log(`Server is running successfully on PORT ${process.env.PORT || 8000}`)
+    );
+  })
+  .catch((err) => {
+    console.error('DB connection failed', err);
 
-Connection();
+  });
 
 export default app;
