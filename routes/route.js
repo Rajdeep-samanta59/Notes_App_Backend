@@ -2,7 +2,7 @@ import express from 'express';
 import {signupUser, loginUser,logoutUser} from '../controller/user.controller.js';
 // image upload endpoints  will be added Here
 // import { createNote, getAllNotes, getNote, updateNote, deleteNote} from '../controller/postController.js';
-import { createNote} from '../controller/note.controller.js';
+import { createNote,getAllNotes,getNote,updateNote} from '../controller/note.controller.js';
 
 import { authenticateToken } from '../controller/jwt.controller.js';
 
@@ -15,12 +15,12 @@ router.post('/logout',logoutUser);
 
 // CREATE A NOTE
 router.post('/create',authenticateToken, createNote);
-// // GET ALL NOTES 
-// router.get('/posts', authenticateToken, getAllNotes);
-// // GET A NOTE
-// router.get('/post/:id', authenticateToken, getNote);
-// // UPDATE A NOTE
-// router.put('/update/:id',authenticateToken, updateNote);
+// GET ALL NOTES 
+router.get('/notes', authenticateToken, getAllNotes);
+// GET A NOTE
+router.get('/note/:id', authenticateToken, getNote);
+// UPDATE A NOTE
+router.put('/update/:id',authenticateToken, updateNote);
 // // Delete a note
 // router.delete('/delete/:id',authenticateToken, deleteNote);
 

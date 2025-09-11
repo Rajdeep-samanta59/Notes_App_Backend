@@ -1,23 +1,22 @@
 import jwt from "jsonwebtoken";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 
 dotenv.config();
 
-export const authenticateToken = (request, response, next) =>{
-    const authHeader = request.headers['authorization']; // reading  from the header 
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token == null) {
-        return response.status(401).json({ msg: 'token is missing' });
+export const authenticateToken = (request, response, next) => {
+  const authHeader = request.headers["authorization"]; // reading  from the header
+  if (!authHeader)
+    return response.status(401).json({ msg: "token is missing" });
+  // const token = authHeader && authHeader.split(' ')[1];
+  let token = authHeader.includes(" ") ? authHeader.split(" ")[1] : authHeader;
+  if (!token) return res.status(401).json({ msg: "token is missing" });
+  token = token.trim();
+  jwt.verify(token, process.env.ACCESS_SECRET_KEY, (error, user) => {
+    if (error) {
+      return response.status(403).json({ msg: "invalid token" });
     }
 
-    jwt.verify(token, process.env.ACCESS_SECRET_KEY, (error, user) => {
-        if (error) {
-            return response.status(403).json({ msg: 'invalid token' })
-        }
-
-        request.user = user;
-        next();
-})
-
-}
+    request.user = user;
+    next();
+  });
+};

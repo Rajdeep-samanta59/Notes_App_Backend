@@ -41,12 +41,19 @@ export const loginUser = async (req, res) => {
     let match = await bcryptjs.compare(req.body.password, user.password);
     if (match) {
       const accessToken = jwt.sign(
-        user.toJSON(),
+        { id: user._id, email: user.email, name: user.name },
         process.env.ACCESS_SECRET_KEY,
         { expiresIn: "5d" }
+
+        /* user.toJSON(),
+        process.env.ACCESS_SECRET_KEY,
+        { expiresIn: "5d" }
+          this is for if one usr can see the oters post ie notes also 
+        */
       );
       const refreshToken = jwt.sign(
-        user.toJSON(),
+        // user.toJSON(),
+        { id: user._id, email: user.email },
         process.env.REFRESH_SECRET_KEY
       );
 
