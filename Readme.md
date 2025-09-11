@@ -25,3 +25,18 @@ THREE
 3) All  tested, verified ,visualized  thoroughly .
 
 
+# DAY-8
+
+ONE 
+1) Implemented  get a perticular note by user , get  all the notes  by user 
+
+TWO 
+2)	Implemented  edit (update of  the note's title ,content , image link and as well as tags ) is  now possble ;
+
+THREE
+
+3) made  middleware updation and previous day's  create note controller some things ;
+4) so as a result no other user can modify or see  the other user's note ; if they try access will be denied ! !
+
+
+
