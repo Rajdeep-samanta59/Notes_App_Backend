@@ -40,3 +40,10 @@ THREE
 
 
 
+# DAY-10
+
+ONE 
+1) Implemented  note delete controller  
+
+TWO
+2) Connected Frontend and Backend

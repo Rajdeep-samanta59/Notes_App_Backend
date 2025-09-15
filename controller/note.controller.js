@@ -44,8 +44,6 @@ export const getNote = async (req, res) => {
 
     const note = await Note.findById(id).lean();
     if (!note) return res.status(404).json({ msg: 'note not found' });
-
-    // Owner-only: if token present, enforce same author
     const userId = req.user?.id || req.user?._id;
     if (userId && String(note.author) !== String(userId)) {
       return res.status(403).json({ msg: 'forbidden' }); // if  this   is the id of  the any other  user's then forbidden messsage will come 
@@ -71,3 +69,27 @@ export const updateNote = async (req, res) => {
 };
 
 // DELETE A  NOTE CONTROLLER
+export const deleteNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ msg: 'id is required' });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ msg: 'invalid id format' });
+    }
+
+    const note = await Note.findById(id);
+    if (!note) return res.status(404).json({ msg: 'note not found' });
+
+    // Optional: ensure only owner can delete when authenticated
+    const userId = req.user?.id || req.user?._id;
+    if (userId && String(note.author) !== String(userId)) {
+      return res.status(403).json({ msg: 'forbidden' });
+    }
+
+    await note.deleteOne();
+    return res.status(200).json({ msg: 'note deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
+  }
+};
+
