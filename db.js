@@ -1,11 +1,18 @@
-import mongoose from 'mongoose';
+// ...existing code...
+import mongoose from "mongoose";
 
-const connectDB = async () => {
-  const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/notes_app_dev';
-  await mongoose.connect(uri, {
-    
-  });
-  console.log('MongoDB connected');
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri) {
+  console.error("MONGO_URI not set. Set the MONGO_URI env var in Render (or .env for local).");
+  process.exit(1);
+}
+
+export const connectDB = async () => {
+  try {
+    await mongoose.connect(mongoUri);
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("DB connection failed", err);
+    process.exit(1);
+  }
 };
-
-export default connectDB;
