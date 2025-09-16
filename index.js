@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 
-import Connection from "./db.js";
+import { connectDB } from "./db.js";
 import router from "./routes/route.js";
 dotenv.config();
 
@@ -19,15 +19,18 @@ app.get("/", (req, res) => {
 });
 
 
-Connection()
-  .then(() => {
+const startServer = async () => {
+  try {
+    await connectDB();
     app.listen(process.env.PORT || 8000, () =>
       console.log(`Server is running successfully on PORT ${process.env.PORT || 8000}`)
     );
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error('DB connection failed', err);
+    process.exit(1);
+  }
+};
 
-  });
+startServer();
 
 export default app;
