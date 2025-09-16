@@ -2,6 +2,7 @@ import express from 'express';
 import {signupUser, loginUser,logoutUser} from '../controller/user.controller.js';
 // image upload endpoints  will be added Here
 import { createNote,getAllNotes,getNote,updateNote, deleteNote } from '../controller/note.controller.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 import { authenticateToken } from '../controller/jwt.controller.js';
 
@@ -13,13 +14,13 @@ router.post('/logout',logoutUser);
 // file upload endpoints  will be added  here  later onn
 
 // CREATE A NOTE
-router.post('/create',authenticateToken, createNote);
+router.post('/create',authenticateToken, upload.single('image'), createNote);
 // GET ALL NOTES 
 router.get('/notes', authenticateToken, getAllNotes);
 // GET A NOTE
 router.get('/note/:id', authenticateToken, getNote);
 // UPDATE A NOTE
-router.put('/update/:id',authenticateToken, updateNote);
+router.put('/update/:id',authenticateToken, upload.single('image'), updateNote);
 // Delete a note
 router.delete('/delete/:id',authenticateToken, deleteNote);
 

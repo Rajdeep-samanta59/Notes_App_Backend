@@ -47,3 +47,15 @@ ONE
 
 TWO
 2) Connected Frontend and Backend
+
+
+
+# DAY-11 
+ONE 
+1)Initially Dummy Payload generaing after create form ; so changed this  to actual data (with Cloudinary  Link generation and storing it   properly )
+
+TWO
+2)focused on Frontend
+
+THREE
+2) Deployment 
