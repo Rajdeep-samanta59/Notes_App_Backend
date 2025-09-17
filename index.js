@@ -9,8 +9,16 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-// app.use(bodyParser.json({ extended: true }));
+
+// Configure CORS with specific origin
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:5173';
+app.use(cors({
+  origin: allowedOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", router);  
 
