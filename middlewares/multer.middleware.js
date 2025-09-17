@@ -4,9 +4,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const cloudName =process.env.cloud_name;
-const apiKey = process.env.api_key;
-const apiSecret =process.env.api_secret;
+// Read from either uppercase or lowercase env vars
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.cloud_name;
+const apiKey = process.env.CLOUDINARY_API_KEY || process.env.api_key;
+const apiSecret = process.env.CLOUDINARY_API_SECRET || process.env.api_secret;
+
+if (!cloudName || !apiKey || !apiSecret) {
+  console.error('Missing Cloudinary credentials. Check environment variables.');
+}
 
 cloudinary.config({
   cloud_name: cloudName,

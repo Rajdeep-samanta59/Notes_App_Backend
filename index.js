@@ -10,10 +10,22 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// Configure CORS with specific origin
-const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:5173';
+// Configure CORS to accept requests from multiple origins
+const allowedOrigins = [
+  process.env.ALLOWED_ORIGIN,
+  'http://localhost:5173',
+  'https://notes-app-omega-ruby.vercel.app'
+].filter(Boolean);
+
 app.use(cors({
-  origin: allowedOrigin,
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy violation'));
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
