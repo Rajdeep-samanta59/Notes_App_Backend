@@ -1,9 +1,5 @@
 
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-// Load .env when db.js is imported so process.env values are available
-dotenv.config();
 
 const mongoUri = process.env.MONGO_URI;
 if (!mongoUri) {

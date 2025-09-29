@@ -1,8 +1,5 @@
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Read from either uppercase or lowercase env vars
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.cloud_name;
