@@ -2,9 +2,6 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 
-import { connectDB } from "./db.js";
-import router from "./routes/route.js";
-
 // Try to load dotenv at runtime when available (local development).
 // Use dynamic import so missing dotenv doesn't cause module resolution to fail in production.
 try {
@@ -13,6 +10,10 @@ try {
 } catch (err) {
   // dotenv not available (likely running in production environment where env vars are provided by the host)
 }
+
+// Import DB and routes after dotenv has loaded so process.env values are present
+const { connectDB } = await import("./db.js");
+const { default: router } = await import("./routes/route.js");
 
 const app = express();
 app.use(express.json());
