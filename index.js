@@ -18,21 +18,30 @@ const { default: router } = await import("./routes/route.js");
 const app = express();
 app.use(express.json());
 
-// Configure CORS to accept requests from multiple origins
-const allowedOrigins = [
-  process.env.ALLOWED_ORIGIN,
-  'http://localhost:5173',
-  'https://notes-app-omega-ruby.vercel.app'
-].filter(Boolean);
+// Configure CORS to accept requests from multiple origins.
+// Supports comma-separated ALLOWED_ORIGIN env var and allows vercel preview domains.
+const rawAllowed = process.env.ALLOWED_ORIGIN || process.env.ALLOWED_ORIGINS || '';
+let allowedOrigins = rawAllowed.split(',').map(s => s.trim()).filter(Boolean);
+// Ensure localhost dev URLs are allowed
+allowedOrigins = Array.from(new Set([...allowedOrigins, 'http://localhost:5173', 'http://localhost:5174']));
+const allowAll = allowedOrigins.includes('*');
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Debug logging to Render logs for troubleshooting
+    try { console.log('CORS check - origin:', origin, 'allowedOrigins:', allowedOrigins); } catch(e){}
+
+    // Allow server-side requests (no origin) and Postman
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy violation'));
-    }
-    return callback(null, true);
+    if (allowAll) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow Vercel preview domains and vercel.app/.vercel.sh patterns
+    try {
+      const low = origin.toLowerCase();
+      if (low.endsWith('.vercel.app') || low.endsWith('.vercel.sh')) return callback(null, true);
+    } catch (e) {}
+
+    return callback(new Error('CORS policy violation: origin not allowed ' + origin));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
