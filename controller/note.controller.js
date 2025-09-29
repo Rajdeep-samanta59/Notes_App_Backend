@@ -128,6 +128,7 @@ export const updateNote = async (req, res) => {
       content: req.body.content ?? note.content,
       tags,
       image: imageUrl,
+      updatedAt: new Date(), // ensure updatedAt changes on update
     };
 
     await Note.findByIdAndUpdate(req.params.id, { $set: update });

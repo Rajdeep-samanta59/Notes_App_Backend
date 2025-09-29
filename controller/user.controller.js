@@ -11,6 +11,13 @@ dotenv.config();
 export const signupUser = async (req, res) => {
   try {
     console.log("SIGNUP attempt:", { body: req.body });
+
+    // Check if email already exists
+    const existing = await User.findOne({ email: req.body.email });
+    if (existing) {
+      return res.status(400).json({ msg: 'Email already exists' });
+    }
+
     const hashedPassword = await bcryptjs.hash(req.body.password, 10);
     console.log("hashedPassword created");
 
@@ -25,9 +32,11 @@ export const signupUser = async (req, res) => {
     return res.status(200).json({ msg: "SignUp Successful", id: saved._id });
   } catch (error) {
     console.error("Error while Signing Up:", error);
-    return res
-      .status(500)
-      .json({ msg: "Error in SignUp", error: String(error) });
+    // handle duplicate key errors or other DB errors more clearly
+    if (error && error.code === 11000) {
+      return res.status(400).json({ msg: 'Email already exists' });
+    }
+    return res.status(500).json({ msg: "Error in SignUp", error: String(error) });
   }
 };
 // LOGIN CONTROLLER 
