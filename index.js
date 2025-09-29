@@ -18,34 +18,23 @@ const { default: router } = await import("./routes/route.js");
 const app = express();
 app.use(express.json());
 
-// Configure CORS to accept requests from multiple origins.
-// Supports comma-separated ALLOWED_ORIGIN env var and allows vercel preview domains.
+// small, tolerant CORS (supports comma-separated ALLOWED_ORIGIN, allows vercel previews)
 const rawAllowed = process.env.ALLOWED_ORIGIN || process.env.ALLOWED_ORIGINS || '';
-let allowedOrigins = rawAllowed.split(',').map(s => s.trim()).filter(Boolean);
-// Ensure localhost dev URLs are allowed
-allowedOrigins = Array.from(new Set([...allowedOrigins, 'http://localhost:5173', 'http://localhost:5174']));
+const allowedOrigins = rawAllowed.split(',').map(s => s.trim()).filter(Boolean);
 const allowAll = allowedOrigins.includes('*');
 
 app.use(cors({
-  origin: function(origin, callback) {
-    // Debug logging to Render logs for troubleshooting
-    try { console.log('CORS check - origin:', origin, 'allowedOrigins:', allowedOrigins); } catch(e){}
-
-    // Allow server-side requests (no origin) and Postman
-    if (!origin) return callback(null, true);
-    if (allowAll) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Allow Vercel preview domains and vercel.app/.vercel.sh patterns
-    try {
-      const low = origin.toLowerCase();
-      if (low.endsWith('.vercel.app') || low.endsWith('.vercel.sh')) return callback(null, true);
-    } catch (e) {}
-
-    return callback(new Error('CORS policy violation: origin not allowed ' + origin));
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // server/Postman
+    if (allowAll) return cb(null, true); // wildcard allowed
+    if (allowedOrigins.includes(origin)) return cb(null, true); // exact match
+    const low = (origin || '').toLowerCase();
+    if (low.endsWith('.vercel.app') || low.endsWith('.vercel.sh')) return cb(null, true); // allow previews
+    return cb(new Error('CORS policy: origin not allowed'));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
