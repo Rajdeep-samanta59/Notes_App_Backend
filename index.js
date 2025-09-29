@@ -29,10 +29,15 @@ app.use(cors({
   origin: function(origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy violation'));
+    // Allow exact matches from allowedOrigins
+    if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+    // Allow Vercel hosted frontends (common for deployed client apps)
+    try {
+      if (origin.includes('vercel.app')) return callback(null, true);
+    } catch (e) {
+      // origin may not be a string; fall through to rejection
     }
-    return callback(null, true);
+    return callback(new Error('CORS policy violation'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
