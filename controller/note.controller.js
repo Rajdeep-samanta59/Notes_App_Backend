@@ -57,12 +57,29 @@ export const createNote = async (req, res) => {
 
 export const getAllNotes = async (req, res) => {
   try {
-    const userId = req.user && req.user.id; //the main logic  is to restrict notes to a specific logged-in user.
+    const userId = req.user && req.user.id; // restrict notes to the logged-in user
     const filter = userId ? { author: userId } : {};
 
-    const notes = await Note.find(filter).sort({ createdAt: -1 }).lean();
+    // pagination
+    const page = Math.max(1, parseInt(req.query.page || '1', 10));
+    const limit = Math.max(1, parseInt(req.query.limit || '8', 10)); // default 8 per page
+    const skip = (page - 1) * limit;
 
-    return res.status(200).json({ notes });
+    // optional search query
+    const q = (req.query.q || '').toString().trim();
+    if (q) {
+      // escape regex special chars
+      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(safe, 'i');
+      filter.$or = [{ title: regex }, { content: regex }, { tags: { $in: [regex] } }];
+    }
+
+    const [notes, total] = await Promise.all([
+      Note.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Note.countDocuments(filter),
+    ]);
+
+    return res.status(200).json({ notes, total, page, limit });
   } catch (error) {
     return res.status(500).json({ msg: error.message });
   }
